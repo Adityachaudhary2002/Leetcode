@@ -19,7 +19,7 @@ const {getLanguageById,submitbatch}= require("../utils/problemUtility");
                 stdin:Input,
                 expected_output:output,
             }));
-            const submitResult=await submitBatch(submissions);
+            const submitResult=await submitbatch(submissions);
 
         }
 
