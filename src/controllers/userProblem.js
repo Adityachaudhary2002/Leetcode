@@ -108,7 +108,7 @@ const{id}=req.params;
 if(!id)
     return res.status(400).send("ID is Missing");
 
-const getProblem=await Problem.findById(id);
+const getProblem=await Problem.findById(id).select('_id title description difficulty tags  visibleTestCases  startcode referenceSolution');
 if(!getProblem)
     return res.status(400).send("Problem is Missing");
 res.status(200).send(getProblem);
@@ -121,7 +121,7 @@ const getAllProblem=async(req,res)=>{
    
    try{
 
-    const getProblem=await Problem.find({});
+    const getProblem=await Problem.find({}).select('_id title difficulty tags');
   if(!getProblem)
     return res.status(400).send("Problem is Missing");
    res.status(200).send(getProblem);
