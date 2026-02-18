@@ -130,4 +130,19 @@ const getAllProblem=async(req,res)=>{
    res.status(500).send("Error"+err);
    }  
 }
-export default{createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem};
+const solvedAllProblemByUser=async(req,res)=>{
+   try{
+     // const count=req.result.problemSolved.length;
+     // res.status(200).send(req.result.problemSolved);
+     const userId=req.result._id;
+    const user=await user.findById(userId).populate({
+        path:"problemSolved",
+        select:"_id title difficulty tags",
+    });
+       res.status(200).send(user.problemSolved);
+   }
+   catch(err){
+     res.status(500).send("Server Error");
+   }
+}
+export default{createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,solvedAllProblemByUser};

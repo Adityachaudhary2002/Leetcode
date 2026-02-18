@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const submissionSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'user',
     required: true
   },
   problemId: {
@@ -19,7 +19,7 @@ const submissionSchema = new Schema({
   language: {
     type: String,
     required: true,
-    enum: ['javascript', 'cpp', 'java'] 
+    enum: ['javascript', 'c++', 'java'] 
   },
   status: {
     type: String,
