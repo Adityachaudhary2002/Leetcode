@@ -72,6 +72,14 @@ try{
         submittedResult.memory=memory;
 
         await submittedResult.save();
+        
+        // problemId ko insert krenge userSchema ke problemsolved me if it is not present there.
+        if (!req.result.problemSolved.includes(problemId)){
+            req.result.problemSolved.push(problemId);
+            await req.result.save();
+        }
+
+
         res.status(201).send(submittedResult);
 
 }
@@ -80,4 +88,40 @@ catch(err){
 }
 
 }
-module.exports=submitCode;
+
+
+const runCode= async(req,res)=>{
+    try{
+   const userId=req.params._id;
+   const problemId=req.params._id;
+   const{code,language}=req.body;
+   if(!userId||!code||!problemId||!language)
+   return res.status(400).send("Some field missing"); 
+
+   // fetch the problem from database
+  const problem=await problem.findById(problemId);
+
+  //testcases(Hidden)
+
+  // judge0 ko code submit karna hai
+     const languageId=getLanguageById(language);
+
+
+   const submissions=problem.visibleTestCases.map((testcase)=>({
+                source_code:code,
+                language_id:languageId,
+                stdin:testcase.Input,
+                expected_output:testcase.output,
+            }));
+             const submitResult=await submitbatch(submissions);
+           const resultToken=submitResult.map((value)=>value.token);
+        const testResult=await submitToken(resultToken);
+
+        res.status(201).send(submittedResult);
+
+}
+catch(err){
+  res.staus(500).send("Internal server Error"+err);
+}
+}
+module.exports={submitCode,runCode};
