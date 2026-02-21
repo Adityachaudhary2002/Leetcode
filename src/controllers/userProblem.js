@@ -145,4 +145,16 @@ const solvedAllProblemByUser=async(req,res)=>{
      res.status(500).send("Server Error");
    }
 }
-export default{createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,solvedAllProblemByUser};
+const submittedProblem=async(req,res)=>{
+    try{
+const userId=req.result._id;
+const problemId=req.params.pid;
+ const ans= await submission.find({userId,problemId});
+ if(ans.length==0)
+    re.status(200).send("NO Submission is present");
+    }
+    catch(err){
+res.status(500).send("Internal Sever Error");
+    }
+}
+export default{createProblem,updateProblem,deleteProblem,getProblemById,getAllProblem,solvedAllProblemByUser,submittedProblem};
