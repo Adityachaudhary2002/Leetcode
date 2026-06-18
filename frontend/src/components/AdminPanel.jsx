@@ -26,13 +26,13 @@ const problemSchema = z.object({
   startCode: z.array(
     z.object({
       language: z.enum(['C++', 'Java', 'JavaScript']),
-      initialcode: z.string().min(1, 'Initial code is required')
+      initialCode: z.string().min(1, 'Initial code is required')
     })
   ).length(3, 'All three languages required'),
   referenceSolution: z.array(
     z.object({
       language: z.enum(['C++', 'Java', 'JavaScript']),
-      completecode: z.string().min(1, 'Complete code is required')
+      completeCode: z.string().min(1, 'Complete code is required')
     })
   ).length(3, 'All three languages required')
 });
@@ -48,14 +48,14 @@ function AdminPanel() {
     resolver: zodResolver(problemSchema),
     defaultValues: {
       startCode: [
-        { language: 'C++', initialcode: '' },
-        { language: 'Java', initialcode: '' },
-        { language: 'JavaScript', initialcode: '' }
+        { language: 'C++', initialCode: '' },
+        { language: 'Java', initialCode: '' },
+        { language: 'JavaScript', initialCode: '' }
       ],
       referenceSolution: [
-        { language: 'C++', completecode: '' },
-        { language: 'Java', completecode: '' },
-        { language: 'JavaScript', completecode: '' }
+        { language: 'C++', completeCode: '' },
+        { language: 'Java', completeCode: '' },
+        { language: 'JavaScript', completeCode: '' }
       ]
     }
   });
@@ -79,12 +79,7 @@ function AdminPanel() {
   });
 
   const onSubmit = async (data) => {
-    try { 
-      const payload = {
-            ...data,
-            startcode: data.startCode,  // rename to match backend schema
-        };
-        delete payload.startCode;       // remove the wrong key
+    try {
       await axiosClient.post('/problem/create', data);
       alert('Problem created successfully!');
       navigate('/');
@@ -193,8 +188,7 @@ function AdminPanel() {
                 <input
                   {...register(`visibleTestCases.${index}.input`)}
                   placeholder="Input"
-                  className="textarea textarea-bordered w-full"
-                   rows={3}
+                  className="input input-bordered w-full"
                 />
                 
                 <input
@@ -240,8 +234,7 @@ function AdminPanel() {
                 <input
                   {...register(`hiddenTestCases.${index}.input`)}
                   placeholder="Input"
-                 className="textarea textarea-bordered w-full"
-                rows={3}
+                  className="input input-bordered w-full"
                 />
                 
                 <input
@@ -271,7 +264,7 @@ function AdminPanel() {
                   </label>
                   <pre className="bg-base-300 p-4 rounded-lg">
                     <textarea
-                      {...register(`startCode.${index}.initialcode`)}
+                      {...register(`startCode.${index}.initialCode`)}
                       className="w-full bg-transparent font-mono"
                       rows={6}
                     />
@@ -284,7 +277,7 @@ function AdminPanel() {
                   </label>
                   <pre className="bg-base-300 p-4 rounded-lg">
                     <textarea
-                      {...register(`referenceSolution.${index}.completecode`)}
+                      {...register(`referenceSolution.${index}.completeCode`)}
                       className="w-full bg-transparent font-mono"
                       rows={6}
                     />

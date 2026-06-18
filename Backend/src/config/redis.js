@@ -2,10 +2,10 @@ const{ createClient } =require( 'redis');
 
 const redisClient = createClient({
     username: 'default',
-    password: 'SyX7LhkMVSVkKy5vZBszhUgI0ydLYoda',
+    password: 'Vuum1GVP8qEJXJwz2moaz9ii96KZIADi',
     socket: {
-        host: 'redis-14347.crce283.ap-south-1-2.ec2.cloud.redislabs.com',
-        port: 14347
+        host: 'redis-12306.crce300.ap-south-1-2.ec2.cloud.redislabs.com',
+        port: 12306
     }
 });
 redisClient.on('error', (err) => {
@@ -13,3 +13,8 @@ redisClient.on('error', (err) => {
 });
 
 module.exports=redisClient;
+
+
+
+
+

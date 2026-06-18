@@ -1,11 +1,12 @@
-const mongoose=require('mongoose');
-const {Schema}=mongoose;
-const userSchema=new Schema({
+const mongoose = require('mongoose');
+const {Schema} = mongoose;
+
+const userSchema = new Schema({
     firstName:{
-        type:String,
-        required:true,
+        type: String,
+        required: true,
         minLength:3,
-        maxLength:20,
+        maxLength:20
     },
     lastName:{
         type:String,
@@ -16,9 +17,9 @@ const userSchema=new Schema({
         type:String,
         required:true,
         unique:true,
-        trim:true,
+        trim: true,
         lowercase:true,
-        immutable:true,
+        immutable: true,
     },
     age:{
         type:Number,
@@ -28,25 +29,30 @@ const userSchema=new Schema({
     role:{
         type:String,
         enum:['user','admin'],
-        default:'user',
+        default: 'user'
     },
-    problemsolved:{
+    problemSolved:{
         type:[{
-           type:Schema.Types.ObjectId,
+            type:Schema.Types.ObjectId,
             ref:'problem',
-            
-        }]
-       
+            unique:true
+        }],
     },
     password:{
-        type :String,
-        required:true,
-
-    },
-
+        type:String,
+        required: true
+    }
 },{
-    timestamp:true,
+    timestamps:true
 });
 
-const user=mongoose.model('user',userSchema);
-module.exports=user;
+userSchema.post('findOneAndDelete', async function (userInfo) {
+    if (userInfo) {
+      await mongoose.model('submission').deleteMany({ userId: userInfo._id });
+    }
+});
+
+
+const User = mongoose.model("user",userSchema);
+
+module.exports = User;

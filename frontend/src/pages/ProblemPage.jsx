@@ -3,6 +3,15 @@ import { useForm } from 'react-hook-form';
 import Editor from '@monaco-editor/react';
 import { useParams } from 'react-router';
 import axiosClient from "../utils/axiosClient"
+import SubmissionHistory from "../components/SubmissionHistory"
+import ChatAi from '../components/ChatAi';
+import Editorial from '../components/Editorial';
+
+const langMap = {
+        cpp: 'C++',
+        java: 'Java',
+        javascript: 'JavaScript'
+};
 
 
 const ProblemPage = () => {
@@ -17,180 +26,54 @@ const ProblemPage = () => {
   const editorRef = useRef(null);
   let {problemId}  = useParams();
 
+  
+
   const { handleSubmit } = useForm();
 
-
-//     _id: '507f1f77bcf86cd799439011',
-//     title: 'Two Sum',
-//     description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
-
-// You may assume that each input would have exactly one solution, and you may not use the same element twice.
-
-// You can return the answer in any order.
-
-// Example 1:
-// Input: nums = [2,7,11,15], target = 9
-// Output: [0,1]
-// Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
-
-// Example 2:
-// Input: nums = [3,2,4], target = 6
-// Output: [1,2]
-
-// Example 3:
-// Input: nums = [3,3], target = 6
-// Output: [0,1]
-
-// Constraints:
-// - 2 <= nums.length <= 10^4
-// - -10^9 <= nums[i] <= 10^9
-// - -10^9 <= target <= 10^9
-// - Only one valid answer exists.`,
-//     difficulty: 'easy',
-//     tags: 'array',
-//     visibleTestCases: [
-//       {
-//         input: 'nums = [2,7,11,15], target = 9',
-//         output: '[0,1]',
-//         explanation: 'Because nums[0] + nums[1] == 9, we return [0, 1].'
-//       },
-//       {
-//         input: 'nums = [3,2,4], target = 6',
-//         output: '[1,2]',
-//         explanation: 'Because nums[1] + nums[2] == 6, we return [1, 2].'
-//       }
-//     ],
-//     startCode: [
-//       {
-//         language: 'javascript',
-//         initialCode: `/**
-//  * @param {number[]} nums
-//  * @param {number} target
-//  * @return {number[]}
-//  */
-// var twoSum = function(nums, target) {
-    
-// };`
-//       },
-//       {
-//         language: 'java',
-//         initialCode: `class Solution {
-//     public int[] twoSum(int[] nums, int target) {
-        
-//     }
-// }`
-//       },
-//       {
-//         language: 'cpp',
-//         initialCode: `class Solution {
-// public:
-//     vector<int> twoSum(vector<int>& nums, int target) {
-        
-//     }
-// };`
-//       }
-//     ],
-//     editorial: {
-//       content: `## Approach 1: Brute Force
-
-// The brute force approach is simple. Loop through each element x and find if there is another value that equals to target - x.
-
-// **Algorithm:**
-// 1. For each element in the array
-// 2. Check if target - current element exists in the rest of the array
-// 3. If found, return the indices
-
-// **Complexity Analysis:**
-// - Time complexity: O(n²)
-// - Space complexity: O(1)
-
-// ## Approach 2: Hash Table
-
-// To improve our runtime complexity, we need a more efficient way to check if the complement exists in the array. If the complement exists, we need to get its index. What is the best way to maintain a mapping of each element in the array to its index? A hash table.
-
-// **Algorithm:**
-// 1. Create a hash table to store elements and their indices
-// 2. For each element, calculate complement = target - current element
-// 3. If complement exists in hash table, return indices
-// 4. Otherwise, add current element to hash table
-
-// **Complexity Analysis:**
-// - Time complexity: O(n)
-// - Space complexity: O(n)`
-//     },
-//     solutions: [
-//       {
-//         language: 'javascript',
-//         title: 'Hash Table Approach',
-//         code: `var twoSum = function(nums, target) {
-//     const map = new Map();
-    
-//     for (let i = 0; i < nums.length; i++) {
-//         const complement = target - nums[i];
-        
-//         if (map.has(complement)) {
-//             return [map.get(complement), i];
-//         }
-        
-//         map.set(nums[i], i);
-//     }
-    
-//     return [];
-// };`
-//       },
-//       {
-//         language: 'java',
-//         title: 'Hash Table Approach',
-//         code: `class Solution {
-//     public int[] twoSum(int[] nums, int target) {
-//         Map<Integer, Integer> map = new HashMap<>();
-        
-//         for (int i = 0; i < nums.length; i++) {
-//             int complement = target - nums[i];
-            
-//             if (map.containsKey(complement)) {
-//                 return new int[] { map.get(complement), i };
-//             }
-            
-//             map.put(nums[i], i);
-//         }
-        
-//         return new int[0];
-//     }
-// }`
-//       }
-//     ]
-//   };
-
-  // Fetch problem data
-  useEffect(() => {
+ useEffect(() => {
     const fetchProblem = async () => {
       setLoading(true);
       try {
         
         const response = await axiosClient.get(`/problem/problemById/${problemId}`);
+       
         
-        const initialCode = response.data.startCode.find((sc) => {
-        
-        if (sc.language == "C++" && selectedLanguage == 'cpp')
-        return true;
-        else if (sc.language == "Java" && selectedLanguage == 'java')
-        return true;
-        else if (sc.language == "Javascript" && selectedLanguage == 'javascript')
-        return true;
+        const initialCode = response.data.startCode.find(sc => sc.language === langMap[selectedLanguage]).initialCode;
 
-        return false;
-        })?.initialCode || 'Hello';
-
-        console.log(initialCode);
         setProblem(response.data);
-        // console.log(response.data.startCode);
         
-
-        console.log(initialCode);
         setCode(initialCode);
         setLoading(false);
         
+      } catch (error) {
+        console.error('Error fetching problem:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchProblem();
+  }, [problemId]);
+ useEffect(() => {
+    const fetchProblem = async () => {
+      setLoading(true);
+      try {
+        const response = await axiosClient.get(`/problem/problemById/${problemId}`);
+        const data = response.data || {};
+        console.debug('Fetched problem data:', data);
+
+        // Safely resolve initial code for selected language
+        const startCodeArr = Array.isArray(data.startCode) ? data.startCode : [];
+        const langKey = langMap[selectedLanguage];
+        let found = startCodeArr.find(sc => sc.language === langKey);
+        if (!found) {
+          // try case-insensitive match (e.g. 'javascript' vs 'JavaScript')
+          found = startCodeArr.find(sc => sc.language && sc.language.toString().toLowerCase() === selectedLanguage.toLowerCase());
+        }
+        const initialCode = found ? (found.initialCode || '') : (startCodeArr[0]?.initialCode || '');
+
+        setProblem(data);
+        setCode(initialCode);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching problem:', error);
         setLoading(false);
@@ -203,7 +86,13 @@ const ProblemPage = () => {
   // Update code when language changes
   useEffect(() => {
     if (problem) {
-      const initialCode = problem.startCode.find(sc => sc.language === selectedLanguage)?.initialCode || '';
+      const startCodeArr = Array.isArray(problem.startCode) ? problem.startCode : [];
+      const langKey = langMap[selectedLanguage];
+      let found = startCodeArr.find(sc => sc.language === langKey);
+      if (!found) {
+        found = startCodeArr.find(sc => sc.language && sc.language.toString().toLowerCase() === selectedLanguage.toLowerCase());
+      }
+      const initialCode = found ? (found.initialCode || '') : (startCodeArr[0]?.initialCode || '');
       setCode(initialCode);
     }
   }, [selectedLanguage, problem]);
@@ -323,6 +212,15 @@ const ProblemPage = () => {
           >
             Submissions
           </button>
+
+          <button 
+            className={`tab ${activeLeftTab === 'chatAI' ? 'tab-active' : ''}`}
+            onClick={() => setActiveLeftTab('chatAI')}
+          >
+            ChatAI
+          </button>
+
+
         </div>
 
         {/* Left Content */}
@@ -333,10 +231,10 @@ const ProblemPage = () => {
                 <div>
                   <div className="flex items-center gap-4 mb-6">
                     <h1 className="text-2xl font-bold">{problem.title}</h1>
-                    <div className={`badge badge-outline ${getDifficultyColor(problem.difficulty)}`}>
-                      {problem.difficulty.charAt(0).toUpperCase() + problem.difficulty.slice(1)}
+                    <div className={`badge badge-outline ${getDifficultyColor((problem.difficulty || '').toString().toLowerCase())}`}>
+                      {problem.difficulty ? (problem.difficulty.charAt(0).toUpperCase() + problem.difficulty.slice(1)) : 'Unknown'}
                     </div>
-                    <div className="badge badge-primary">{problem.tags}</div>
+                    <div className="badge badge-primary">{Array.isArray(problem.tags) ? problem.tags.join(', ') : (problem.tags || '')}</div>
                   </div>
 
                   <div className="prose max-w-none">
@@ -348,7 +246,7 @@ const ProblemPage = () => {
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold mb-4">Examples:</h3>
                     <div className="space-y-4">
-                      {problem.visibleTestCases.map((example, index) => (
+                      {(problem.visibleTestCases || []).map((example, index) => (
                         <div key={index} className="bg-base-200 p-4 rounded-lg">
                           <h4 className="font-semibold mb-2">Example {index + 1}:</h4>
                           <div className="space-y-2 text-sm font-mono">
@@ -367,7 +265,11 @@ const ProblemPage = () => {
                 <div className="prose max-w-none">
                   <h2 className="text-xl font-bold mb-4">Editorial</h2>
                   <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                    {'Editorial is here for the problem'}
+                    {problem.secureUrl ? (
+                      <Editorial secureUrl={problem.secureUrl} thumbnailUrl={problem.thumbnailUrl} duration={problem.duration} />
+                    ) : (
+                      <div className="text-gray-500">No editorial video is available for this problem.</div>
+                    )}
                   </div>
                 </div>
               )}
@@ -396,7 +298,16 @@ const ProblemPage = () => {
                 <div>
                   <h2 className="text-xl font-bold mb-4">My Submissions</h2>
                   <div className="text-gray-500">
-                    Your submission history will appear here.
+                    <SubmissionHistory problemId={problemId} />
+                  </div>
+                </div>
+              )}
+
+              {activeLeftTab === 'chatAI' && (
+                <div className="prose max-w-none">
+                  <h2 className="text-xl font-bold mb-4">CHAT with AI</h2>
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                    <ChatAi problem={problem}></ChatAi>
                   </div>
                 </div>
               )}
